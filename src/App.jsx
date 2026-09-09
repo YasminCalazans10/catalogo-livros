@@ -5,12 +5,66 @@ import BookCard from './components/BookCard'
 import BookForm from './components/BookForm'
 
 const initialBooks = [
-  { id: 1, title: 'Dom Casmurro', author: 'Machado de Assis', genre: 'Clássico', status: 'Lido', pages: 256, description: 'Um clássico brasileiro sobre memória, ciúme e as ambiguidades de Bentinho.' },
-  { id: 2, title: '1984', author: 'George Orwell', genre: 'Distopia', status: 'Lido', pages: 336, description: 'Uma distopia marcante sobre vigilância, poder e controle da informação.' },
-  { id: 3, title: 'O Pequeno Príncipe', author: 'Antoine de Saint-Exupéry', genre: 'Fábula', status: 'Lendo', pages: 96, description: 'Uma narrativa sensível sobre amizade, afeto e a forma como enxergamos o mundo.' },
-  { id: 4, title: 'Torto Arado', author: 'Itamar Vieira Junior', genre: 'Romance', status: 'Quero ler', pages: 264, description: 'Romance brasileiro que acompanha duas irmãs e suas relações com terra e ancestralidade.' },
-  { id: 5, title: 'A Hora da Estrela', author: 'Clarice Lispector', genre: 'Literatura brasileira', status: 'Quero ler', pages: 88, description: 'A trajetória de Macabéa em uma narrativa sobre existência, linguagem e invisibilidade.' },
-  { id: 6, title: 'O Hobbit', author: 'J. R. R. Tolkien', genre: 'Fantasia', status: 'Lido', pages: 336, description: 'Bilbo Bolseiro deixa sua rotina para viver uma aventura repleta de perigos e descobertas.' },
+  {
+    id: 1,
+    title: 'Dom Casmurro',
+    author: 'Machado de Assis',
+    genre: 'Clássico',
+    status: 'Lido',
+    pages: 256,
+    coverUrl: 'https://covers.openlibrary.org/b/isbn/9788525406798-L.jpg',
+    description: 'Um clássico brasileiro sobre memória, ciúme e as ambiguidades de Bentinho.',
+  },
+  {
+    id: 2,
+    title: '1984',
+    author: 'George Orwell',
+    genre: 'Distopia',
+    status: 'Lido',
+    pages: 336,
+    coverUrl: 'https://covers.openlibrary.org/b/olid/OL7576608M-L.jpg',
+    description: 'Uma distopia marcante sobre vigilância, poder e controle da informação.',
+  },
+  {
+    id: 3,
+    title: 'O Pequeno Príncipe',
+    author: 'Antoine de Saint-Exupéry',
+    genre: 'Fábula',
+    status: 'Lendo',
+    pages: 96,
+    coverUrl: 'https://covers.openlibrary.org/b/isbn/9788522005239-L.jpg',
+    description: 'Uma narrativa sensível sobre amizade, afeto e a forma como enxergamos o mundo.',
+  },
+  {
+    id: 4,
+    title: 'Torto Arado',
+    author: 'Itamar Vieira Junior',
+    genre: 'Romance',
+    status: 'Quero ler',
+    pages: 264,
+    coverUrl: 'https://covers.openlibrary.org/b/isbn/9789896605773-L.jpg',
+    description: 'Romance brasileiro que acompanha duas irmãs e suas relações com terra e ancestralidade.',
+  },
+  {
+    id: 5,
+    title: 'A Hora da Estrela',
+    author: 'Clarice Lispector',
+    genre: 'Literatura brasileira',
+    status: 'Quero ler',
+    pages: 88,
+    coverUrl: 'https://covers.openlibrary.org/b/isbn/9786555320350-L.jpg',
+    description: 'A trajetória de Macabéa em uma narrativa sobre existência, linguagem e invisibilidade.',
+  },
+  {
+    id: 6,
+    title: 'O Hobbit',
+    author: 'J. R. R. Tolkien',
+    genre: 'Fantasia',
+    status: 'Lido',
+    pages: 336,
+    coverUrl: 'https://covers.openlibrary.org/b/isbn/9788595084742-L.jpg',
+    description: 'Bilbo Bolseiro deixa sua rotina para viver uma aventura repleta de perigos e descobertas.',
+  },
 ]
 
 export default function App() {
@@ -20,14 +74,23 @@ export default function App() {
   const filteredBooks = useMemo(() => {
     const term = search.trim().toLocaleLowerCase('pt-BR')
     if (!term) return books
+
     return books.filter((book) =>
       [book.title, book.author, book.genre, book.status]
-        .some((value) => value.toLocaleLowerCase('pt-BR').includes(term))
+        .some((value) => value.toLocaleLowerCase('pt-BR').includes(term)),
     )
   }, [books, search])
 
   function addBook(book) {
     setBooks((current) => [{ ...book, id: Date.now() }, ...current])
+  }
+
+  function updateBookStatus(bookId, newStatus) {
+    setBooks((current) =>
+      current.map((book) =>
+        book.id === bookId ? { ...book, status: newStatus } : book,
+      ),
+    )
   }
 
   return (
@@ -40,11 +103,15 @@ export default function App() {
           </a>
           <span className="team">Yasmin Calazans & Vitor Assis</span>
         </nav>
+
         <div className="hero-content container">
           <div>
             <span className="eyebrow"><Sparkles size={14} /> CATÁLOGO INTERATIVO</span>
             <h1>Livros para guardar,<br /><em>histórias para descobrir.</em></h1>
-            <p>Explore nossa estante, encontre títulos em tempo real e adicione novas leituras ao catálogo.</p>
+            <p>
+              Explore nossa estante, encontre títulos em tempo real,
+              adicione novas leituras e atualize o status de cada livro.
+            </p>
           </div>
         </div>
       </header>
@@ -58,14 +125,25 @@ export default function App() {
           </div>
           <BookForm onAdd={addBook} />
         </div>
+
         <SearchBar value={search} onChange={setSearch} />
+
         <div className="result-line">
-          <span>{filteredBooks.length} {filteredBooks.length === 1 ? 'resultado' : 'resultados'}</span>
+          <span>
+            {filteredBooks.length} {filteredBooks.length === 1 ? 'resultado' : 'resultados'}
+          </span>
           {search && <span>para “{search}”</span>}
         </div>
+
         {filteredBooks.length > 0 ? (
           <div className="book-grid">
-            {filteredBooks.map((book) => <BookCard key={book.id} book={book} />)}
+            {filteredBooks.map((book) => (
+              <BookCard
+                key={book.id}
+                book={book}
+                onStatusChange={updateBookStatus}
+              />
+            ))}
           </div>
         ) : (
           <div className="empty-state">
