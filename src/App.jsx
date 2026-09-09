@@ -93,6 +93,18 @@ export default function App() {
     )
   }
 
+  function updateBook(bookId, updatedBook) {
+    setBooks((current) =>
+      current.map((book) =>
+        book.id === bookId ? { ...book, ...updatedBook, id: book.id } : book,
+      ),
+    )
+  }
+
+  function deleteBook(bookId) {
+    setBooks((current) => current.filter((book) => book.id !== bookId))
+  }
+
   return (
     <main>
       <header className="hero">
@@ -110,7 +122,7 @@ export default function App() {
             <h1>Livros para guardar,<br /><em>histórias para descobrir.</em></h1>
             <p>
               Explore nossa estante, encontre títulos em tempo real,
-              adicione novas leituras e atualize o status de cada livro.
+              adicione novas leituras e gerencie os dados de cada livro.
             </p>
           </div>
         </div>
@@ -142,6 +154,8 @@ export default function App() {
                 key={book.id}
                 book={book}
                 onStatusChange={updateBookStatus}
+                onUpdate={updateBook}
+                onDelete={deleteBook}
               />
             ))}
           </div>
@@ -153,13 +167,6 @@ export default function App() {
           </div>
         )}
       </section>
-
-      <footer>
-        <div className="container footer-content">
-          <span>Desenvolvimento Front-end • Catálogo Interativo</span>
-          <span>Yasmin Calazans & Vitor Assis</span>
-        </div>
-      </footer>
     </main>
   )
 }
