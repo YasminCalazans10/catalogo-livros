@@ -20,53 +20,73 @@ Aplicação web em tela única desenvolvida para a disciplina de **Desenvolvimen
 - Lista inicial com 6 livros.
 - Capas dos 6 livros iniciais.
 - Busca em tempo real por título, autor, gênero ou status.
-- Alteração do status de leitura diretamente em cada card.
-- Status disponíveis: **Quero ler**, **Lendo** e **Lido**.
-- Cards reutilizáveis.
+- Alteração rápida do status de leitura diretamente em cada card.
+- Edição completa de um livro já cadastrado.
+- Na edição é possível alterar título, autor, gênero, status, páginas, URL da capa e descrição.
+- Exclusão de livros com confirmação antes da remoção.
 - Cadastro de novos livros.
 - Campo opcional de URL da capa para novos livros.
 - Atualização imediata da interface por estado reativo.
 - Layout responsivo.
 - Estado vazio quando nenhuma busca encontra resultados.
 
-## Passo a passo do desenvolvimento
+## Estrutura de componentes
 
-1. **Setup inicial:** projeto estruturado com Vite e React.
-2. **Dados iniciais:** 6 livros com título, autor, gênero, status, páginas, descrição e URL de capa.
-3. **Componentização:**
-   - `App.jsx`: componente principal, centraliza os estados e organiza a aplicação.
-   - `SearchBar.jsx`: componente de busca.
-   - `BookCard.jsx`: exibe livro, capa e seletor de status.
-   - `BookForm.jsx`: formulário de inclusão de novos livros.
-4. **Gerenciamento de estado:** `useState` controla a lista e a busca.
-5. **Busca reativa:** `filter()`, `some()` e `includes()` filtram os livros enquanto o usuário digita.
-6. **Renderização:** `map()` cria um `BookCard` para cada livro.
-7. **Inclusão dinâmica:** `setBooks()` adiciona o novo livro ao estado.
-8. **Alteração de status:** `updateBookStatus()` usa `map()` para criar uma nova lista alterando somente o livro selecionado.
-9. **Capas:** os livros iniciais usam imagens de capa fornecidas pelo serviço de capas do Open Library.
+- `App.jsx`: componente principal, controla a lista de livros e as funções de adicionar, editar, excluir e alterar status.
+- `SearchBar.jsx`: campo de busca reativa.
+- `BookCard.jsx`: exibe as informações do livro e os controles de status, edição e exclusão.
+- `BookEditForm.jsx`: formulário de edição completa de um livro existente.
+- `BookForm.jsx`: formulário de inclusão de novos livros.
+
+## Gerenciamento de estado
+
+O `App.jsx` utiliza `useState` para guardar a lista atual de livros e o termo de busca. Quando um livro é adicionado, editado, excluído ou tem seu status alterado, o estado é atualizado e o React renderiza novamente a interface sem recarregar a página.
+
+### Editar livro
+
+A função `updateBook()` utiliza `map()` para criar uma nova lista e substituir apenas o livro com o `id` correspondente:
+
+```jsx
+function updateBook(bookId, updatedBook) {
+  setBooks((current) =>
+    current.map((book) =>
+      book.id === bookId ? { ...book, ...updatedBook, id: book.id } : book
+    )
+  )
+}
+```
+
+### Excluir livro
+
+A função `deleteBook()` utiliza `filter()` para gerar uma nova lista sem o livro selecionado:
+
+```jsx
+function deleteBook(bookId) {
+  setBooks((current) => current.filter((book) => book.id !== bookId))
+}
+```
 
 ## Como executar o projeto
 
-### Sem Git/GitHub Desktop
+### Usando o ZIP no VS Code
 
-1. Baixe e extraia o ZIP do projeto.
-2. Abra a pasta `catalogo-livros-atualizado` no VS Code.
+1. Baixe e extraia o ZIP.
+2. Abra no VS Code a pasta que contém diretamente o arquivo `package.json`.
 3. Abra **Terminal > New Terminal**.
-4. Execute:
-
-```bash
-npm install
-npm run dev
-```
-
-No PowerShell, caso a execução de `npm.ps1` esteja bloqueada, use:
+4. No PowerShell, execute:
 
 ```powershell
 npm.cmd install
 npm.cmd run dev
 ```
 
-Abra no navegador o endereço mostrado pelo Vite, normalmente `http://localhost:5173/`.
+5. Abra no navegador o endereço exibido pelo Vite, normalmente:
+
+```text
+http://localhost:5173/
+```
+
+Durante o uso do site, mantenha o terminal com o Vite aberto.
 
 ### Clonando do GitHub
 
@@ -77,48 +97,6 @@ npm install
 npm run dev
 ```
 
-## Como gerar a versão de produção
-
-```bash
-npm run build
-```
-
-Os arquivos finais serão criados na pasta `dist`.
-
-## Conceitos principais
-
-### State
-
-O estado contém dados que podem mudar durante a execução. `books` guarda a lista atual e `search` guarda o termo digitado.
-
-### Props
-
-O `App` passa o objeto `book` e a função `onStatusChange` para `BookCard`. Também envia `value` e `onChange` para `SearchBar`, e `onAdd` para `BookForm`.
-
-### Alteração de status
-
-Ao selecionar um novo status no card, `BookCard` chama:
-
-```jsx
-onStatusChange(book.id, event.target.value)
-```
-
-No componente pai, `updateBookStatus()` percorre os livros com `map()` e substitui somente o objeto cujo `id` corresponde ao livro alterado:
-
-```jsx
-setBooks((current) =>
-  current.map((book) =>
-    book.id === bookId ? { ...book, status: newStatus } : book
-  )
-)
-```
-
-Isso mantém a atualização de estado imutável e faz o React renderizar o novo status imediatamente.
-
-### Busca
-
-A busca continua considerando título, autor, gênero e status. Portanto, se o status de um livro for alterado, ele passa a responder ao novo status também durante a pesquisa.
-
 ## Observação sobre persistência
 
-Os dados ficam no estado do React. Ao atualizar a página do navegador, os livros adicionados e as alterações de status feitas durante a sessão voltam aos valores iniciais. Persistência permanente exigiria `localStorage`, API ou banco de dados, o que não faz parte do escopo atual.
+Os dados ficam no estado do React. Ao atualizar a página com F5, os livros adicionados, editados, excluídos ou com status modificado durante a sessão retornam aos valores iniciais. Para persistência permanente seria necessário utilizar `localStorage`, API ou banco de dados.
