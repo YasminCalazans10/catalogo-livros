@@ -1,0 +1,87 @@
+import { useMemo, useState } from 'react'
+import { Library, Sparkles } from 'lucide-react'
+import SearchBar from './components/SearchBar'
+import BookCard from './components/BookCard'
+import BookForm from './components/BookForm'
+
+const initialBooks = [
+  { id: 1, title: 'Dom Casmurro', author: 'Machado de Assis', genre: 'Clássico', status: 'Lido', pages: 256, description: 'Um clássico brasileiro sobre memória, ciúme e as ambiguidades de Bentinho.' },
+  { id: 2, title: '1984', author: 'George Orwell', genre: 'Distopia', status: 'Lido', pages: 336, description: 'Uma distopia marcante sobre vigilância, poder e controle da informação.' },
+  { id: 3, title: 'O Pequeno Príncipe', author: 'Antoine de Saint-Exupéry', genre: 'Fábula', status: 'Lendo', pages: 96, description: 'Uma narrativa sensível sobre amizade, afeto e a forma como enxergamos o mundo.' },
+  { id: 4, title: 'Torto Arado', author: 'Itamar Vieira Junior', genre: 'Romance', status: 'Quero ler', pages: 264, description: 'Romance brasileiro que acompanha duas irmãs e suas relações com terra e ancestralidade.' },
+  { id: 5, title: 'A Hora da Estrela', author: 'Clarice Lispector', genre: 'Literatura brasileira', status: 'Quero ler', pages: 88, description: 'A trajetória de Macabéa em uma narrativa sobre existência, linguagem e invisibilidade.' },
+  { id: 6, title: 'O Hobbit', author: 'J. R. R. Tolkien', genre: 'Fantasia', status: 'Lido', pages: 336, description: 'Bilbo Bolseiro deixa sua rotina para viver uma aventura repleta de perigos e descobertas.' },
+]
+
+export default function App() {
+  const [books, setBooks] = useState(initialBooks)
+  const [search, setSearch] = useState('')
+
+  const filteredBooks = useMemo(() => {
+    const term = search.trim().toLocaleLowerCase('pt-BR')
+    if (!term) return books
+    return books.filter((book) =>
+      [book.title, book.author, book.genre, book.status]
+        .some((value) => value.toLocaleLowerCase('pt-BR').includes(term))
+    )
+  }, [books, search])
+
+  function addBook(book) {
+    setBooks((current) => [{ ...book, id: Date.now() }, ...current])
+  }
+
+  return (
+    <main>
+      <header className="hero">
+        <nav className="nav container">
+          <a className="brand" href="#" aria-label="Estante - início">
+            <span className="brand-mark"><Library size={22} /></span>
+            <span>estante.</span>
+          </a>
+          <span className="team">Yasmin Calazans & Vitor Assis</span>
+        </nav>
+        <div className="hero-content container">
+          <div>
+            <span className="eyebrow"><Sparkles size={14} /> CATÁLOGO INTERATIVO</span>
+            <h1>Livros para guardar,<br /><em>histórias para descobrir.</em></h1>
+            <p>Explore nossa estante, encontre títulos em tempo real e adicione novas leituras ao catálogo.</p>
+          </div>
+        </div>
+      </header>
+
+      <section className="catalog container">
+        <div className="catalog-heading">
+          <div>
+            <span className="eyebrow">NOSSA COLEÇÃO</span>
+            <h2>Catálogo de livros</h2>
+            <p>{books.length} livros cadastrados na estante</p>
+          </div>
+          <BookForm onAdd={addBook} />
+        </div>
+        <SearchBar value={search} onChange={setSearch} />
+        <div className="result-line">
+          <span>{filteredBooks.length} {filteredBooks.length === 1 ? 'resultado' : 'resultados'}</span>
+          {search && <span>para “{search}”</span>}
+        </div>
+        {filteredBooks.length > 0 ? (
+          <div className="book-grid">
+            {filteredBooks.map((book) => <BookCard key={book.id} book={book} />)}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <Library size={34} />
+            <h3>Nenhum livro encontrado</h3>
+            <p>Tente outro termo de busca ou cadastre um novo livro.</p>
+          </div>
+        )}
+      </section>
+
+      <footer>
+        <div className="container footer-content">
+          <span>Desenvolvimento Front-end • Catálogo Interativo</span>
+          <span>Yasmin Calazans & Vitor Assis</span>
+        </div>
+      </footer>
+    </main>
+  )
+}
