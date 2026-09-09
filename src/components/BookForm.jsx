@@ -7,6 +7,7 @@ const initialForm = {
   genre: '',
   status: 'Quero ler',
   pages: '',
+  coverUrl: '',
   description: '',
 }
 
@@ -26,8 +27,10 @@ export default function BookForm({ onAdd }) {
     onAdd({
       ...form,
       pages: Number(form.pages) || 0,
+      coverUrl: form.coverUrl.trim(),
       description: form.description.trim() || 'Livro adicionado ao catálogo.',
     })
+
     setForm(initialForm)
     setIsOpen(false)
   }
@@ -77,6 +80,10 @@ export default function BookForm({ onAdd }) {
           <label>
             Páginas
             <input name="pages" type="number" min="0" value={form.pages} onChange={updateField} />
+          </label>
+          <label className="wide">
+            URL da capa
+            <input name="coverUrl" type="url" placeholder="https://..." value={form.coverUrl} onChange={updateField} />
           </label>
           <label className="wide">
             Descrição
